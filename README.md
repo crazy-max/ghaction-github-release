@@ -21,6 +21,7 @@ ___
   * [inputs](#inputs)
   * [outputs](#outputs)
   * [environment variables](#environment-variables)
+* [Permissions](#permissions) 
 * [Contributing](#contributing)
 * [License](#license)
 
@@ -238,6 +239,26 @@ Following environment variables can be used as `step.env` keys
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
 | `GITHUB_TOKEN`      | [GITHUB_TOKEN](https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token) as provided by `secrets` |
 | `GITHUB_REPOSITORY` | Name of a target repository in `<owner>/<repo>` format. defaults to the current repository                                                          |
+
+## Permissions
+
+This Action requires the following permissions on the GitHub integration token:
+
+```yaml
+permissions:
+  contents: write
+```
+
+When used with `discussion_category_name`, additional permission is needed:
+
+```yaml
+permissions:
+  contents: write
+  discussions: write
+```
+
+[GitHub token permissions](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token)
+can be set for an individual job, workflow, or for Actions as a whole.
 
 ## Contributing
 

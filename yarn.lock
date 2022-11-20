@@ -909,6 +909,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octokit/openapi-types@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "@octokit/openapi-types@npm:14.0.0"
+  checksum: 0a1f8f3be998cd82c5a640e9166d43fd183b33d5d36f5e1a9b81608e94d0da87c01ec46c9988f69cd26585d4e2ffc4d3ec99ee4f75e5fe997fc86dad0aa8293c
+  languageName: node
+  linkType: hard
+
 "@octokit/plugin-paginate-rest@npm:^2.17.0":
   version: 2.21.3
   resolution: "@octokit/plugin-paginate-rest@npm:2.21.3"
@@ -929,6 +936,30 @@ __metadata:
   peerDependencies:
     "@octokit/core": ">=3"
   checksum: 30fcc50c335d1093f03573d9fa3a4b7d027fc98b215c43e07e82ee8dabfa0af0cf1b963feb542312ae32d897a2f68dc671577206f30850215517bebedc5a2c73
+  languageName: node
+  linkType: hard
+
+"@octokit/plugin-retry@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "@octokit/plugin-retry@npm:4.0.3"
+  dependencies:
+    "@octokit/types": ^8.0.0
+    bottleneck: ^2.15.3
+  peerDependencies:
+    "@octokit/core": ">=3"
+  checksum: 066a26f922a1550f68bc6d42527e1a4191366173d89f11bd8e1186fb8191e5298e851c4d37848b176457fc7a5f29e9fbdf6cab097ec526e21affaab5b0dfa6dc
+  languageName: node
+  linkType: hard
+
+"@octokit/plugin-throttling@npm:^4.3.2":
+  version: 4.3.2
+  resolution: "@octokit/plugin-throttling@npm:4.3.2"
+  dependencies:
+    "@octokit/types": ^8.0.0
+    bottleneck: ^2.15.3
+  peerDependencies:
+    "@octokit/core": ^4.0.0
+  checksum: 2c9ef9be2cc1b9cb01d4d9f04e82246ccaa41ab05a4dc315f926b11abf5a99e3a38a98756fbb7f9e8d4c4f5e43f052c1dbd11c062017096dd943b8896c9e414c
   languageName: node
   linkType: hard
 
@@ -963,6 +994,15 @@ __metadata:
   dependencies:
     "@octokit/openapi-types": ^12.11.0
   checksum: fd6f75e0b19b90d1a3d244d2b0c323ed8f2f05e474a281f60a321986683548ef2e0ec2b3a946aa9405d6092e055344455f69f58957c60f58368c8bdda5b7d2ab
+  languageName: node
+  linkType: hard
+
+"@octokit/types@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@octokit/types@npm:8.0.0"
+  dependencies:
+    "@octokit/openapi-types": ^14.0.0
+  checksum: 1a0197b2c4c522ac90f145e02b3f8cb048a47f71c2c6bdbf021a03db7dd30ca92a899c0186acb401337f218efe44e60d33cc1cc68715b622bb75bc1a4e79515d
   languageName: node
   linkType: hard
 
@@ -1583,6 +1623,13 @@ __metadata:
   version: 2.2.3
   resolution: "before-after-hook@npm:2.2.3"
   checksum: a1a2430976d9bdab4cd89cb50d27fa86b19e2b41812bf1315923b0cba03371ebca99449809226425dd3bcef20e010db61abdaff549278e111d6480034bebae87
+  languageName: node
+  linkType: hard
+
+"bottleneck@npm:^2.15.3":
+  version: 2.19.5
+  resolution: "bottleneck@npm:2.19.5"
+  checksum: c5eef1bbea12cef1f1405e7306e7d24860568b0f7ac5eeab706a86762b3fc65ef6d1c641c8a166e4db90f412fc5c948fc5ce8008a8cd3d28c7212ef9c3482bda
   languageName: node
   linkType: hard
 
@@ -2549,6 +2596,8 @@ __metadata:
   dependencies:
     "@actions/core": ^1.10.0
     "@actions/github": ^5.1.1
+    "@octokit/plugin-retry": ^4.0.3
+    "@octokit/plugin-throttling": ^4.3.2
     "@types/glob": ^8.0.0
     "@types/mime": ^3.0.1
     "@types/node": ^18.11.9

@@ -1,8 +1,9 @@
 import {paths, parseConfig, isTag, unmatchedPatterns, uploadUrl} from './util';
 import {release, upload, GitHubReleaser} from './github';
 import {getOctokit} from '@actions/github';
+import {retry} from '@octokit/plugin-retry';
+import {throttling} from '@octokit/plugin-throttling';
 import {setFailed, setOutput} from '@actions/core';
-
 import {env} from 'process';
 
 async function run() {
@@ -19,29 +20,28 @@ async function run() {
       }
     }
 
-    // const oktokit = GitHub.plugin(
-    //   require("@octokit/plugin-throttling"),
-    //   require("@octokit/plugin-retry")
-    // );
-
-    const gh = getOctokit(config.github_token, {
-      //new oktokit(
-      throttle: {
-        onRateLimit: (retryAfter, options) => {
-          console.warn(`Request quota exhausted for request ${options.method} ${options.url}`);
-          if (options.request.retryCount === 0) {
-            // only retries once
-            console.log(`Retrying after ${retryAfter} seconds!`);
-            return true;
+    const gh = getOctokit(
+      config.github_token,
+      {
+        throttle: {
+          onRateLimit: (retryAfter, options) => {
+            console.warn(`Request quota exhausted for request ${options.method} ${options.url}`);
+            if (options.request.retryCount === 0) {
+              // only retries once
+              console.log(`Retrying after ${retryAfter} seconds!`);
+              return true;
+            }
+          },
+          onAbuseLimit: (retryAfter, options) => {
+            // does not retry, only logs a warning
+            console.warn(`Abuse detected for request ${options.method} ${options.url}`);
           }
-        },
-        onAbuseLimit: (retryAfter, options) => {
-          // does not retry, only logs a warning
-          console.warn(`Abuse detected for request ${options.method} ${options.url}`);
         }
-      }
-    });
-    //);
+      },
+      retry,
+      throttling
+    );
+
     const rel = await release(config, new GitHubReleaser(gh));
     if (config.input_files) {
       const files = paths(config.input_files);

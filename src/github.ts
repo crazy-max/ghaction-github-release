@@ -1,9 +1,9 @@
-import fetch from "node-fetch";
-import { GitHub } from "@actions/github/lib/utils";
-import { Config, isTag, releaseBody } from "./util";
-import { statSync, readFileSync } from "fs";
-import { getType } from "mime";
-import { basename } from "path";
+import fetch from 'node-fetch';
+import {GitHub} from '@actions/github/lib/utils';
+import {Config, isTag, releaseBody} from './util';
+import {statSync, readFileSync} from 'fs';
+import {getType} from 'mime';
+import {basename} from 'path';
 
 type GitHub = InstanceType<typeof GitHub>;
 
@@ -24,15 +24,11 @@ export interface Release {
   target_commitish: string;
   draft: boolean;
   prerelease: boolean;
-  assets: Array<{ id: number; name: string }>;
+  assets: Array<{id: number; name: string}>;
 }
 
 export interface Releaser {
-  getReleaseByTag(params: {
-    owner: string;
-    repo: string;
-    tag: string;
-  }): Promise<{ data: Release }>;
+  getReleaseByTag(params: {owner: string; repo: string; tag: string}): Promise<{data: Release}>;
 
   createRelease(params: {
     owner: string;
@@ -45,7 +41,7 @@ export interface Releaser {
     target_commitish: string | undefined;
     discussion_category_name: string | undefined;
     generate_release_notes: boolean | undefined;
-  }): Promise<{ data: Release }>;
+  }): Promise<{data: Release}>;
 
   updateRelease(params: {
     owner: string;
@@ -59,12 +55,9 @@ export interface Releaser {
     prerelease: boolean | undefined;
     discussion_category_name: string | undefined;
     generate_release_notes: boolean | undefined;
-  }): Promise<{ data: Release }>;
+  }): Promise<{data: Release}>;
 
-  allReleases(params: {
-    owner: string;
-    repo: string;
-  }): AsyncIterableIterator<{ data: Release[] }>;
+  allReleases(params: {owner: string; repo: string}): AsyncIterableIterator<{data: Release[]}>;
 }
 
 export class GitHubReleaser implements Releaser {
@@ -73,11 +66,7 @@ export class GitHubReleaser implements Releaser {
     this.github = github;
   }
 
-  getReleaseByTag(params: {
-    owner: string;
-    repo: string;
-    tag: string;
-  }): Promise<{ data: Release }> {
+  getReleaseByTag(params: {owner: string; repo: string; tag: string}): Promise<{data: Release}> {
     return this.github.rest.repos.getReleaseByTag(params);
   }
 
@@ -92,7 +81,7 @@ export class GitHubReleaser implements Releaser {
     target_commitish: string | undefined;
     discussion_category_name: string | undefined;
     generate_release_notes: boolean | undefined;
-  }): Promise<{ data: Release }> {
+  }): Promise<{data: Release}> {
     return this.github.rest.repos.createRelease(params);
   }
 
@@ -108,18 +97,13 @@ export class GitHubReleaser implements Releaser {
     prerelease: boolean | undefined;
     discussion_category_name: string | undefined;
     generate_release_notes: boolean | undefined;
-  }): Promise<{ data: Release }> {
+  }): Promise<{data: Release}> {
     return this.github.rest.repos.updateRelease(params);
   }
 
-  allReleases(params: {
-    owner: string;
-    repo: string;
-  }): AsyncIterableIterator<{ data: Release[] }> {
-    const updatedParams = { per_page: 100, ...params };
-    return this.github.paginate.iterator(
-      this.github.rest.repos.listReleases.endpoint.merge(updatedParams)
-    );
+  allReleases(params: {owner: string; repo: string}): AsyncIterableIterator<{data: Release[]}> {
+    const updatedParams = {per_page: 100, ...params};
+    return this.github.paginate.iterator(this.github.rest.repos.listReleases.endpoint.merge(updatedParams));
   }
 }
 
@@ -128,12 +112,12 @@ export const asset = (path: string): ReleaseAsset => {
     name: basename(path),
     mime: mimeOrDefault(path),
     size: statSync(path).size,
-    data: readFileSync(path),
+    data: readFileSync(path)
   };
 };
 
 export const mimeOrDefault = (path: string): string => {
-  return getType(path) || "application/octet-stream";
+  return getType(path) || 'application/octet-stream';
 };
 
 export const upload = async (
@@ -141,33 +125,31 @@ export const upload = async (
   github: GitHub,
   url: string,
   path: string,
-  currentAssets: Array<{ id: number; name: string }>
+  currentAssets: Array<{id: number; name: string}>
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
-  const [owner, repo] = config.github_repository.split("/");
-  const { name, size, mime, data: body } = asset(path);
-  const currentAsset = currentAssets.find(
-    ({ name: currentName }) => currentName == name
-  );
+  const [owner, repo] = config.github_repository.split('/');
+  const {name, size, mime, data: body} = asset(path);
+  const currentAsset = currentAssets.find(({name: currentName}) => currentName == name);
   if (currentAsset) {
     console.log(`♻️ Deleting previously uploaded asset ${name}...`);
     await github.rest.repos.deleteReleaseAsset({
       asset_id: currentAsset.id || 1,
       owner,
-      repo,
+      repo
     });
   }
   console.log(`⬆️ Uploading ${name}...`);
   const endpoint = new URL(url);
-  endpoint.searchParams.append("name", name);
+  endpoint.searchParams.append('name', name);
   const resp = await fetch(endpoint.toString(), {
     headers: {
-      "content-length": `${size}`,
-      "content-type": mime,
-      authorization: `token ${config.github_token}`,
+      'content-length': `${size}`,
+      'content-type': mime,
+      authorization: `token ${config.github_token}`
     },
-    method: "POST",
-    body,
+    method: 'POST',
+    body
   });
   const json = (await resp.json()) as {
     message?: string;
@@ -175,31 +157,19 @@ export const upload = async (
     errors?: any;
   };
   if (resp.status !== 201) {
-    throw new Error(
-      `Failed to upload release asset ${name}. received status code ${
-        resp.status
-      }\n${json.message}\n${JSON.stringify(json.errors)}`
-    );
+    throw new Error(`Failed to upload release asset ${name}. received status code ${resp.status}\n${json.message}\n${JSON.stringify(json.errors)}`);
   }
   return json;
 };
 
-export const release = async (
-  config: Config,
-  releaser: Releaser,
-  maxRetries = 3
-): Promise<Release> => {
+export const release = async (config: Config, releaser: Releaser, maxRetries = 3): Promise<Release> => {
   if (maxRetries <= 0) {
     console.log(`❌ Too many retries. Aborting...`);
-    throw new Error("Too many retries.");
+    throw new Error('Too many retries.');
   }
 
-  const [owner, repo] = config.github_repository.split("/");
-  const tag =
-    config.input_tag_name ||
-    (isTag(config.github_ref)
-      ? config.github_ref.replace("refs/tags/", "")
-      : "");
+  const [owner, repo] = config.github_repository.split('/');
+  const tag = config.input_tag_name || (isTag(config.github_ref) ? config.github_ref.replace('refs/tags/', '') : '');
 
   const discussion_category_name = config.input_discussion_category_name;
   const generate_release_notes = config.input_generate_release_notes;
@@ -209,11 +179,9 @@ export const release = async (
     if (config.input_draft) {
       for await (const response of releaser.allReleases({
         owner,
-        repo,
+        repo
       })) {
-        const release = response.data.find(
-          (release) => release.tag_name === tag
-        );
+        const release = response.data.find(release => release.tag_name === tag);
         if (release) {
           return release;
         }
@@ -222,18 +190,13 @@ export const release = async (
     const existingRelease = await releaser.getReleaseByTag({
       owner,
       repo,
-      tag,
+      tag
     });
 
     const release_id = existingRelease.data.id;
     let target_commitish: string;
-    if (
-      config.input_target_commitish &&
-      config.input_target_commitish !== existingRelease.data.target_commitish
-    ) {
-      console.log(
-        `Updating commit from "${existingRelease.data.target_commitish}" to "${config.input_target_commitish}"`
-      );
+    if (config.input_target_commitish && config.input_target_commitish !== existingRelease.data.target_commitish) {
+      console.log(`Updating commit from "${existingRelease.data.target_commitish}" to "${config.input_target_commitish}"`);
       target_commitish = config.input_target_commitish;
     } else {
       target_commitish = existingRelease.data.target_commitish;
@@ -245,23 +208,17 @@ export const release = async (
     // body parts as a release gets updated. some users will likely want this while
     // others won't previously this was duplicating content for most which
     // no one wants
-    const workflowBody = releaseBody(config) || "";
-    const existingReleaseBody = existingRelease.data.body || "";
+    const workflowBody = releaseBody(config) || '';
+    const existingReleaseBody = existingRelease.data.body || '';
     let body: string;
     if (config.input_append_body && workflowBody && existingReleaseBody) {
-      body = existingReleaseBody + "\n" + workflowBody;
+      body = existingReleaseBody + '\n' + workflowBody;
     } else {
       body = workflowBody || existingReleaseBody;
     }
 
-    const draft =
-      config.input_draft !== undefined
-        ? config.input_draft
-        : existingRelease.data.draft;
-    const prerelease =
-      config.input_prerelease !== undefined
-        ? config.input_prerelease
-        : existingRelease.data.prerelease;
+    const draft = config.input_draft !== undefined ? config.input_draft : existingRelease.data.draft;
+    const prerelease = config.input_prerelease !== undefined ? config.input_prerelease : existingRelease.data.prerelease;
 
     const release = await releaser.updateRelease({
       owner,
@@ -274,7 +231,7 @@ export const release = async (
       draft,
       prerelease,
       discussion_category_name,
-      generate_release_notes,
+      generate_release_notes
     });
     return release.data;
   } catch (error) {
@@ -285,13 +242,11 @@ export const release = async (
       const draft = config.input_draft;
       const prerelease = config.input_prerelease;
       const target_commitish = config.input_target_commitish;
-      let commitMessage = "";
+      let commitMessage = '';
       if (target_commitish) {
         commitMessage = ` using commit "${target_commitish}"`;
       }
-      console.log(
-        `👩‍🏭 Creating new GitHub release for tag ${tag_name}${commitMessage}...`
-      );
+      console.log(`👩‍🏭 Creating new GitHub release for tag ${tag_name}${commitMessage}...`);
       try {
         const release = await releaser.createRelease({
           owner,
@@ -303,24 +258,16 @@ export const release = async (
           prerelease,
           target_commitish,
           discussion_category_name,
-          generate_release_notes,
+          generate_release_notes
         });
         return release.data;
       } catch (error) {
         // presume a race with competing metrix runs
-        console.log(
-          `⚠️ GitHub release failed with status: ${
-            error.status
-          }\n${JSON.stringify(error.response.data.errors)}\nretrying... (${
-            maxRetries - 1
-          } retries remaining)`
-        );
+        console.log(`⚠️ GitHub release failed with status: ${error.status}\n${JSON.stringify(error.response.data.errors)}\nretrying... (${maxRetries - 1} retries remaining)`);
         return release(config, releaser, maxRetries - 1);
       }
     } else {
-      console.log(
-        `⚠️ Unexpected error fetching GitHub release for tag ${config.github_ref}: ${error}`
-      );
+      console.log(`⚠️ Unexpected error fetching GitHub release for tag ${config.github_ref}: ${error}`);
       throw error;
     }
   }

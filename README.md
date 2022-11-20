@@ -1,56 +1,60 @@
-<div align="center">
-  📦 :octocat:
-</div>
-<h1 align="center">
-  action gh-release
-</h1>
+[![GitHub release](https://img.shields.io/github/release/crazy-max/ghaction-github-release.svg?style=flat-square)](https://github.com/crazy-max/ghaction-github-release/releases/latest)
+[![GitHub marketplace](https://img.shields.io/badge/marketplace-github--release--action-blue?logo=github&style=flat-square)](https://github.com/marketplace/actions/github-release-action)
+[![Test workflow](https://img.shields.io/github/workflow/status/crazy-max/ghaction-github-release/test?label=test&logo=github&style=flat-square)](https://github.com/crazy-max/ghaction-github-release/actions?workflow=test)
+[![Codecov](https://img.shields.io/codecov/c/github/crazy-max/ghaction-github-release?logo=codecov&style=flat-square)](https://codecov.io/gh/crazy-max/ghaction-github-release)
+[![Become a sponsor](https://img.shields.io/badge/sponsor-crazy--max-181717.svg?logo=github&style=flat-square)](https://github.com/sponsors/crazy-max)
+[![Paypal Donate](https://img.shields.io/badge/donate-paypal-00457c.svg?logo=paypal&style=flat-square)](https://www.paypal.me/crazyws)
 
-<p align="center">
-   A GitHub Action for creating GitHub Releases on Linux, Windows, and macOS virtual environments
-</p>
+## About
 
-<div align="center">
-  <img src="demo.png"/>
-</div>
+GitHub Action for creating GitHub Releases.
 
-<div align="center">
-  <a href="https://github.com/softprops/action-gh-release/actions">
-		<img src="https://github.com/softprops/action-gh-release/workflows/Main/badge.svg"/>
-	</a>
-</div>
+This repository is a fork of https://github.com/softprops/action-gh-release
 
-<br />
+___
 
-## 🤸 Usage
+* [Usage](#usage)
+  * [Limit releases to pushes to tags](#limit-releases-to-pushes-to-tags)
+  * [Uploading release assets](#uploading-release-assets)
+  * [External release notes](#external-release-notes)
+* [Customizing](#customizing)
+  * [inputs](#inputs)
+  * [outputs](#outputs)
+  * [environment variables](#environment-variables)
+* [Contributing](#contributing)
+* [License](#license)
 
-### 🚥 Limit releases to pushes to tags
+## Usage
 
-Typically usage of this action involves adding a step to a build that
-is gated pushes to git tags. You may find `step.if` field helpful in accomplishing this
+### Limit releases to pushes to tags
+
+Typically, usage of this action involves adding a step to a build that is gated
+pushes to git tags. You may find `step.if` field helpful in accomplishing this
 as it maximizes the reuse value of your workflow for non-tag pushes.
 
-Below is a simple example of `step.if` tag gating
-
 ```yaml
-name: Main
+name: release
 
-on: push
+on:
+  push:
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Release
+        uses: crazy-max/ghaction-github-release@v1
         if: startsWith(github.ref, 'refs/tags/')
 ```
 
-You can also use push config tag filter
+You can also use push config tag filter:
 
 ```yaml
-name: Main
+name: release
 
 on:
   push:
@@ -58,97 +62,119 @@ on:
       - "v*.*.*"
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Release
+        uses: crazy-max/ghaction-github-release@v1
 ```
 
-### ⬆️ Uploading release assets
+### Uploading release assets
 
-You can configure a number of options for your
-GitHub release and all are optional.
+You can configure a number of options for your GitHub release and all are
+optional.
 
-A common case for GitHub releases is to upload your binary after its been validated and packaged.
-Use the `with.files` input to declare a newline-delimited list of glob expressions matching the files
-you wish to upload to GitHub releases. If you'd like you can just list the files by name directly.
+A common case for GitHub releases is to upload your binary after its been
+validated and packaged. Use the `with.files` input to declare a
+newline-delimited list of glob expressions matching the files you wish to
+upload to GitHub releases. If you'd like you can just list the files by name
+directly.
 
-Below is an example of uploading a single asset named `Release.txt`
+Below is an example of uploading a single asset named `release.txt`
 
 ```yaml
-name: Main
+name: release
 
-on: push
+on:
+  push:
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build
-        run: echo ${{ github.sha }} > Release.txt
-      - name: Test
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Build
+        run: echo ${{ github.sha }} > release.txt
+      -
+        name: Test
         run: cat Release.txt
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      -
+        name: Release
+        uses: crazy-max/ghaction-github-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: Release.txt
+          files: release.txt
 ```
 
-Below is an example of uploading more than one asset with a GitHub release
+Below is an example of uploading more than one asset with a GitHub release:
 
 ```yaml
-name: Main
+name: release
 
-on: push
+on:
+  push:
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Build
-        run: echo ${{ github.sha }} > Release.txt
-      - name: Test
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Build
+        run: echo ${{ github.sha }} > release.txt
+      -
+        name: Test
         run: cat Release.txt
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      -
+        name: Release
+        uses: crazy-max/ghaction-github-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            Release.txt
+            release.txt
             LICENSE
 ```
 
-> **⚠️ Note:** Notice the `|` in the yaml syntax above ☝️. That let's you effectively declare a multi-line yaml string. You can learn more about multi-line yaml syntax [here](https://yaml-multiline.info)
+> **Warning**
+>
+> Notice the `|` in the yaml syntax above. That lets you effectively declare a
+> multi-line yaml string. You can learn more about multi-line yaml syntax [here](https://yaml-multiline.info)
 
-### 📝 External release notes
+### External release notes
 
-Many systems exist that can help generate release notes for you. This action supports
-loading release notes from a path in your repository's build to allow for the flexibility
-of using any changelog generator for your releases, including a human 👩‍💻
+Many systems exist that can help generate release notes for you. This action
+supports loading release notes from a path in your repository's build to allow
+for the flexibility of using any changelog generator for your releases,
+including a human.
 
 ```yaml
-name: Main
+name: release
 
-on: push
+on:
+  push:
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Generate Changelog
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Generate Changelog
         run: echo "# Good things have arrived" > ${{ github.workspace }}-CHANGELOG.txt
-      - name: Release
-        uses: softprops/action-gh-release@v1
+      -
+        name: Release
+        uses: crazy-max/ghaction-github-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: ${{ github.workspace }}-CHANGELOG.txt
@@ -159,14 +185,14 @@ jobs:
           GITHUB_REPOSITORY: my_gh_org/my_gh_repo
 ```
 
-### 💅 Customizing
+## Customizing
 
-#### inputs
+### inputs
 
-The following are optional as `step.with` keys
+Following inputs can be used as `step.with` keys
 
 | Name                       | Type    | Description                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| -------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|----------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `body`                     | String  | Text communicating notable changes in this release                                                                                                                                                                                                                                                                                                                                                                                              |
 | `body_path`                | String  | Path to load text communicating notable changes in this release                                                                                                                                                                                                                                                                                                                                                                                 |
 | `draft`                    | Boolean | Indicator of whether or not this release is a draft                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -182,54 +208,42 @@ The following are optional as `step.with` keys
 | `generate_release_notes`   | Boolean | Whether to automatically generate the name and body for this release. If name is specified, the specified name will be used; otherwise, a name will be automatically generated. If body is specified, the body will be pre-pended to the automatically generated notes. See the [GitHub docs for this feature](https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes) for more information |
 | `append_body`              | Boolean | Append to existing body instead of overwriting it                                                                                                                                                                                                                                                                                                                                                                                               |
 
-💡 When providing a `body` and `body_path` at the same time, `body_path` will be
-attempted first, then falling back on `body` if the path can not be read from.
+> **Note**
+>
+> When providing a `body` and `body_path` at the same time, `body_path` will be
+> attempted first, then falling back on `body` if the path can not be read from.
 
-💡 When the release info keys (such as `name`, `body`, `draft`, `prerelease`, etc.)
-are not explicitly set and there is already an existing release for the tag, the
-release will retain its original info.
+> **Note**
+>
+> When the release info keys (such as `name`, `body`, `draft`, `prerelease`, etc.)
+> are not explicitly set and there is already an existing release for the tag,
+> the release will retain its original info.
 
-#### outputs
+### outputs
 
-The following outputs can be accessed via `${{ steps.<step-id>.outputs }}` from this action
+Following outputs are available:
 
-| Name         | Type   | Description                                                                                                                                                                                                |
-| ------------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `url`        | String | Github.com URL for the release                                                                                                                                                                             |
-| `id`         | String | Release ID                                                                                                                                                                                                 |
-| `upload_url` | String | URL for uploading assets to the release                                                                                                                                                                    |
+| Name         | Type   | Description                                                                                                                                                                               |
+|--------------|--------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `url`        | String | Github.com URL for the release                                                                                                                                                            |
+| `id`         | String | Release ID                                                                                                                                                                                |
+| `upload_url` | String | URL for uploading assets to the release                                                                                                                                                   |
 | `assets`     | String | JSON array containing information about each uploaded asset, in the format given [here](https://docs.github.com/en/rest/releases/assets#get-a-release-asset) (minus the `uploader` field) |
 
-As an example, you can use `${{ fromJSON(steps.<step-id>.outputs.assets)[0].browser_download_url }}` to get the download URL of the first asset.
+### environment variables
 
-#### environment variables
+Following environment variables can be used as `step.env` keys
 
-The following `step.env` keys are allowed as a fallback but deprecated in favor of using inputs.
+| Name                | Description                                                                                                                                         |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| `GITHUB_TOKEN`      | [GITHUB_TOKEN](https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token) as provided by `secrets` |
+| `GITHUB_REPOSITORY` | Name of a target repository in `<owner>/<repo>` format. defaults to the current repository                                                          |
 
-| Name                | Description                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------------ |
-| `GITHUB_TOKEN`      | GITHUB_TOKEN as provided by `secrets`                                                      |
-| `GITHUB_REPOSITORY` | Name of a target repository in `<owner>/<repo>` format. defaults to the current repository |
+## Contributing
 
-> **⚠️ Note:** This action was previously implemented as a Docker container, limiting its use to GitHub Actions Linux virtual environments only. With recent releases, we now support cross platform usage. You'll need to remove the `docker://` prefix in these versions
+Want to contribute? Awesome! The most basic way to show your support is to star the project, or to raise issues. If
+you want to open a pull request, please read the [contributing guidelines](.github/CONTRIBUTING.md).
 
-### Permissions
+## License
 
-This Action requires the following permissions on the GitHub integration token:
-
-```yaml
-permissions:
-  contents: write
-```
-
-When used with `discussion_category_name`, additional permission is needed:
-
-```yaml
-permissions:
-  contents: write
-  discussions: write
-```
-
-[GitHub token permissions](https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token) can be set for an individual job, workflow, or for Actions as a whole.
-
-Doug Tangren (softprops) 2019
+MIT. See `LICENSE` for more details.

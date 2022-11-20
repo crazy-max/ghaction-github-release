@@ -128,7 +128,7 @@ export const asset = (path: string): ReleaseAsset => {
     name: basename(path),
     mime: mimeOrDefault(path),
     size: statSync(path).size,
-    data: readFileSync(path)
+    data: readFileSync(path),
   };
 };
 
@@ -142,6 +142,7 @@ export const upload = async (
   url: string,
   path: string,
   currentAssets: Array<{ id: number; name: string }>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
   const [owner, repo] = config.github_repository.split("/");
   const { name, size, mime, data: body } = asset(path);
@@ -153,22 +154,26 @@ export const upload = async (
     await github.rest.repos.deleteReleaseAsset({
       asset_id: currentAsset.id || 1,
       owner,
-      repo
+      repo,
     });
   }
   console.log(`⬆️ Uploading ${name}...`);
   const endpoint = new URL(url);
   endpoint.searchParams.append("name", name);
-  const resp = await fetch(endpoint, {
+  const resp = await fetch(endpoint.toString(), {
     headers: {
       "content-length": `${size}`,
       "content-type": mime,
-      authorization: `token ${config.github_token}`
+      authorization: `token ${config.github_token}`,
     },
     method: "POST",
-    body
+    body,
   });
-  const json = await resp.json();
+  const json = (await resp.json()) as {
+    message?: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    errors?: any;
+  };
   if (resp.status !== 201) {
     throw new Error(
       `Failed to upload release asset ${name}. received status code ${
@@ -182,7 +187,7 @@ export const upload = async (
 export const release = async (
   config: Config,
   releaser: Releaser,
-  maxRetries: number = 3
+  maxRetries = 3
 ): Promise<Release> => {
   if (maxRetries <= 0) {
     console.log(`❌ Too many retries. Aborting...`);
@@ -204,18 +209,20 @@ export const release = async (
     if (config.input_draft) {
       for await (const response of releaser.allReleases({
         owner,
-        repo
+        repo,
       })) {
-        let release = response.data.find(release => release.tag_name === tag);
+        const release = response.data.find(
+          (release) => release.tag_name === tag
+        );
         if (release) {
           return release;
         }
       }
     }
-    let existingRelease = await releaser.getReleaseByTag({
+    const existingRelease = await releaser.getReleaseByTag({
       owner,
       repo,
-      tag
+      tag,
     });
 
     const release_id = existingRelease.data.id;
@@ -267,7 +274,7 @@ export const release = async (
       draft,
       prerelease,
       discussion_category_name,
-      generate_release_notes
+      generate_release_notes,
     });
     return release.data;
   } catch (error) {
@@ -278,7 +285,7 @@ export const release = async (
       const draft = config.input_draft;
       const prerelease = config.input_prerelease;
       const target_commitish = config.input_target_commitish;
-      let commitMessage: string = "";
+      let commitMessage = "";
       if (target_commitish) {
         commitMessage = ` using commit "${target_commitish}"`;
       }
@@ -286,7 +293,7 @@ export const release = async (
         `👩‍🏭 Creating new GitHub release for tag ${tag_name}${commitMessage}...`
       );
       try {
-        let release = await releaser.createRelease({
+        const release = await releaser.createRelease({
           owner,
           repo,
           tag_name,
@@ -296,7 +303,7 @@ export const release = async (
           prerelease,
           target_commitish,
           discussion_category_name,
-          generate_release_notes
+          generate_release_notes,
         });
         return release.data;
       } catch (error) {
@@ -304,9 +311,9 @@ export const release = async (
         console.log(
           `⚠️ GitHub release failed with status: ${
             error.status
-          }\n${JSON.stringify(
-            error.response.data.errors
-          )}\nretrying... (${maxRetries - 1} retries remaining)`
+          }\n${JSON.stringify(error.response.data.errors)}\nretrying... (${
+            maxRetries - 1
+          } retries remaining)`
         );
         return release(config, releaser, maxRetries - 1);
       }

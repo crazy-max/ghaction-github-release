@@ -1,7 +1,11 @@
 # https://help.github.com/en/articles/metadata-syntax-for-github-actions
-name: "GH Release"
+name: "GitHub Release Action"
 description: "Github Action for creating Github Releases"
-author: "softprops"
+author: "crazy-max"
+branding:
+  color: "green"
+  icon: "package"
+
 inputs:
   body:
     description: "Note-worthy description of changes in release"
@@ -46,8 +50,7 @@ inputs:
   append_body:
     description: "Append to existing body instead of overwriting it. Default is false."
     required: false
-env:
-  "GITHUB_TOKEN": "As provided by Github Actions"
+
 outputs:
   url:
     description: "URL to the Release HTML Page"
@@ -57,9 +60,7 @@ outputs:
     description: "URL for uploading assets to the release"
   assets:
     description: "JSON array containing information about each uploaded asset, in the format given [here](https://docs.github.com/en/rest/reference/repos#upload-a-release-asset--code-samples) (minus the `uploader` field)"
+
 runs:
-  using: "node12"
+  using: "node16"
   main: "dist/index.js"
-branding:
-  color: "green"
-  icon: "package"

@@ -1,13 +1,12 @@
 {
   "name": "github-release-action",
   "description": "GitHub Action for creating GitHub Releases",
-  "main": "lib/main.js",
+  "main": "src/main.ts",
   "scripts": {
-    "build": "ncc build src/main.ts --source-map --minify --license licenses.txt",
+    "build": "ncc build --source-map --minify --license licenses.txt",
     "lint": "eslint src/**/*.ts __tests__/**/*.ts",
     "format": "eslint --fix src/**/*.ts __tests__/**/*.ts",
-    "test": "jest --coverage",
-    "all": "yarn run build && yarn run format && yarn test"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -20,6 +19,7 @@
   ],
   "author": "CrazyMax",
   "license": "MIT",
+  "packageManager": "yarn@3.3.0",
   "dependencies": {
     "@actions/core": "^1.4.0",
     "@actions/github": "^5.0.0",

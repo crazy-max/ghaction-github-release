@@ -1,0 +1,33 @@
+name: test
+
+on:
+  push:
+    branches:
+      - 'master'
+      - 'releases/v*'
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v3
+      -
+        name: Validate
+        uses: docker/bake-action@v2
+        with:
+          targets: validate
+      -
+        name: Test
+        uses: docker/bake-action@v2
+        with:
+          targets: test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      -
+        name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/clover.xml

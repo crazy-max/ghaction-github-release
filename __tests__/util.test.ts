@@ -63,7 +63,7 @@ describe("util", () => {
           github_repository: "",
           github_token: "",
           input_body: undefined,
-          input_body_path: "__tests__/release.txt",
+          input_body_path: "__tests__/fixtures/release.txt",
           input_draft: false,
           input_prerelease: false,
           input_files: [],
@@ -83,7 +83,7 @@ describe("util", () => {
           github_repository: "",
           github_token: "",
           input_body: "foo",
-          input_body_path: "__tests__/release.txt",
+          input_body_path: "__tests__/fixtures/release.txt",
           input_draft: false,
           input_prerelease: false,
           input_files: [],
@@ -318,8 +318,8 @@ describe("util", () => {
   describe("paths", () => {
     it("resolves files given a set of paths", async () => {
       assert.deepStrictEqual(
-        paths(["tests/data/**/*", "tests/data/does/not/exist/*"]),
-        ["tests/data/foo/bar.txt"]
+        paths(["__tests__/fixtures/data/**/*", "__tests__/fixtures/data/does/not/exist/*"]),
+        ["__tests__/fixtures/data/foo/bar.txt"]
       );
     });
   });
@@ -327,8 +327,8 @@ describe("util", () => {
   describe("unmatchedPatterns", () => {
     it("returns the patterns that don't match any files", async () => {
       assert.deepStrictEqual(
-        unmatchedPatterns(["tests/data/**/*", "tests/data/does/not/exist/*"]),
-        ["tests/data/does/not/exist/*"]
+        unmatchedPatterns(["__tests__/fixtures/data/**/*", "__tests__/fixtures/data/does/not/exist/*"]),
+        ["__tests__/fixtures/data/does/not/exist/*"]
       );
     });
   });

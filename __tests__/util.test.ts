@@ -18,6 +18,9 @@ describe('util', () => {
     it('parses newline and comma-delimited (and then some)', () => {
       expect(parseInputFiles('foo,bar\nbaz,boom,\n\ndoom,loom ')).toStrictEqual(['foo', 'bar', 'baz', 'boom', 'doom', 'loom']);
     });
+    it('parses strings with backslashes', () => {
+      expect(parseInputFiles('foo\\bar,baz')).toStrictEqual(['foo/bar', 'baz']);
+    });
   });
 
   describe('releaseBody', () => {

@@ -41,7 +41,7 @@ export const parseInputFiles = (files: string): string[] => {
       acc
         .concat(line.split(','))
         .filter(pat => pat)
-        .map(pat => pat.trim()),
+        .map(pat => pat.trim().replace(/\\/g, '/')),
     []
   );
 };

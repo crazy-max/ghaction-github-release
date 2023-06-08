@@ -1013,15 +1013,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/plugin-throttling@npm:^5.2.0":
-  version: 5.2.0
-  resolution: "@octokit/plugin-throttling@npm:5.2.0"
+"@octokit/plugin-throttling@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "@octokit/plugin-throttling@npm:6.0.1"
   dependencies:
     "@octokit/types": ^9.0.0
     bottleneck: ^2.15.3
   peerDependencies:
     "@octokit/core": ^4.0.0
-  checksum: 965ebaea081117abb10d733baa86a3530de19295549782cc5f49cd145edd5b5a30609dc35b3e3e0bb96e960b2115f6f6eca68e363a0374abca20614081680132
+  checksum: 80f9c83c557c81cde75ad35701ca8a5e55959513d3f4506c86fc40d764fd4d478602fc5afc7ac6c265a1c55d448f5fb22eb6d6b9ff45d0cb97870121311444ba
   languageName: node
   linkType: hard
 
@@ -2790,7 +2790,7 @@ __metadata:
     "@actions/core": ^1.10.0
     "@actions/github": ^5.1.1
     "@octokit/plugin-retry": ^4.1.3
-    "@octokit/plugin-throttling": ^5.2.0
+    "@octokit/plugin-throttling": ^6.0.1
     "@types/glob": ^8.1.0
     "@types/mime": ^3.0.1
     "@types/node": ^18.16.5

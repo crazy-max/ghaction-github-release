@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v3
       -
         name: Release
-        uses: crazy-max/ghaction-github-release@v1
+        uses: crazy-max/ghaction-github-release@v2
         if: startsWith(github.ref, 'refs/tags/')
 ```
 
@@ -71,7 +71,7 @@ jobs:
         uses: actions/checkout@v3
       -
         name: Release
-        uses: crazy-max/ghaction-github-release@v1
+        uses: crazy-max/ghaction-github-release@v2
 ```
 
 ### Uploading release assets
@@ -108,7 +108,7 @@ jobs:
         run: cat Release.txt
       -
         name: Release
-        uses: crazy-max/ghaction-github-release@v1
+        uses: crazy-max/ghaction-github-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: release.txt
@@ -137,7 +137,7 @@ jobs:
         run: cat Release.txt
       -
         name: Release
-        uses: crazy-max/ghaction-github-release@v1
+        uses: crazy-max/ghaction-github-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
@@ -175,7 +175,7 @@ jobs:
         run: echo "# Good things have arrived" > ${{ github.workspace }}-CHANGELOG.txt
       -
         name: Release
-        uses: crazy-max/ghaction-github-release@v1
+        uses: crazy-max/ghaction-github-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           body_path: ${{ github.workspace }}-CHANGELOG.txt
@@ -233,7 +233,7 @@ Following outputs are available:
 
 ### environment variables
 
-Following environment variables can be used as `step.env` keys
+The following environment variables can be used as `step.env` keys
 
 | Name                | Description                                                                                                                                         |
 |---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|

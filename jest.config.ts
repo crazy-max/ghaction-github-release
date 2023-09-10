@@ -1,10 +1,13 @@
 module.exports = {
   clearMocks: true,
-  moduleFileExtensions: ["js", "ts"],
-  setupFiles: ["dotenv/config"],
-  testMatch: ["**/*.test.ts"],
+  testEnvironment: 'node',
+  moduleFileExtensions: ['js', 'ts'],
+  setupFiles: ['dotenv/config'],
+  testMatch: ['**/*.test.ts'],
   transform: {
-    "^.+\\.ts$": "ts-jest",
+    '^.+\\.ts$': 'ts-jest'
   },
-  verbose: true,
+  collectCoverageFrom: ['src/**/{!(main.ts),}.ts'],
+  coveragePathIgnorePatterns: ['dist/', 'node_modules/', '__tests__/'],
+  verbose: true
 };
